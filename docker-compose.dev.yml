@@ -1,0 +1,40 @@
+version: "3.8"
+
+networks:
+  network_1:
+   driver: bridge
+   name: network_1
+
+services:
+  nginx:
+    restart: always
+    container_name: nginx-proxy
+    build:
+      context: .
+    ports:
+      - 80:80
+    volumes:
+      - './nginx_def_dev.conf:/etc/nginx/nginx.conf'
+    depends_on:
+      - gui
+      - server
+    networks:
+      - network_1
+  gui:
+    build:
+      context: ./gui
+    restart: always
+    container_name: gui
+    depends_on:
+      - server
+    networks:
+      - network_1
+  server:
+    build:
+      context: ./server
+    container_name: fast_api_server
+    command: npm run start:dev
+    restart: always
+    env_file: "./api/.env"
+    networks:
+      - network_1
