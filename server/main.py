@@ -1,18 +1,19 @@
 """FastAPI server templat"""
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 # from routers import items  # Importing your routers
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 from modules.some_script.some_script import some_script
 
 
 # This function will run when the server starts
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Life span run"""
     # Code to run on startup
     result= some_script('FastAPI')
     print(f"Some script is runing {result}")
-    
     yield
 
     # Code to run on shutdown
@@ -31,6 +32,8 @@ app.add_middleware(
 
 @app.get("/")
 async def main():
+    """Main rout the app"""
+
     return {
         "title": "Python template 🚀",
         "message": "This message from FastAPI server"
