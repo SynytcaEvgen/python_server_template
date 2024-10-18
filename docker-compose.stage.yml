@@ -1,0 +1,52 @@
+version: "3.8"
+
+networks:
+  expert:
+   driver: bridge
+   name: expert
+
+services:
+  nginx:
+    restart: always
+    container_name: nginx-proxy
+    build:
+      context: .
+    environment :
+      - DOMEN_NAME=atndev.site
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/www/letsencrypt/:/data/letsencrypt/:ro
+      - /etc/letsencrypt/:/etc/letsencrypt/:ro
+    depends_on:
+      - ui
+      - api
+      - instruction_expert
+    networks:
+      - expert
+  ui:
+    build:
+      context: ./ui
+    restart: always
+    depends_on:
+      - api
+    networks:
+      - expert
+  api:
+    build:
+      context: ./api
+    command: npm run start:dev
+    restart: always
+    env_file: "./api/.env"
+    networks:
+      - expert
+  instruction_expert:
+    build:
+      context: ./expert
+    env_file: "./expert/.env"
+    restart: always
+    depends_on:
+      - api
+    networks:
+      - expert
