@@ -1,9 +1,9 @@
 version: "3.8"
 
 networks:
-  network_1:
+  coolnet:
    driver: bridge
-   name: network_1
+   name: coolnet
 
 services:
   nginx:
@@ -19,7 +19,7 @@ services:
       - gui
       - server
     networks:
-      - network_1
+      - coolnet
   gui:
     build:
       context: ./gui
@@ -28,13 +28,13 @@ services:
     depends_on:
       - server
     networks:
-      - network_1
+      - coolnet
   server:
     build:
       context: ./server
     container_name: fast_api_server
     command: npm run start:dev
     restart: always
-    env_file: "./api/.env"
+    env_file: "./server/.env"
     networks:
-      - network_1
+      - coolnet
